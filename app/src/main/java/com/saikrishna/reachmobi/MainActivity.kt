@@ -15,14 +15,17 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Newspaper
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,13 +33,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.saikrishna.reachmobi.presentation.favorites_list.FavoritesListScreen
 import com.saikrishna.reachmobi.presentation.home.components.AppSearchBar
 import com.saikrishna.reachmobi.presentation.models.BottomNavigationItem
 import com.saikrishna.reachmobi.presentation.news_item_list.NewsListScreen
+import com.saikrishna.reachmobi.presentation.viewmodel.NewsViewModel
 import com.saikrishna.reachmobi.ui.theme.ReachMobiTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
@@ -67,13 +73,31 @@ class MainActivity : ComponentActivity() {
                 )
             )
 
+            val newsViewModel: NewsViewModel = hiltViewModel()
+            val listItems = newsViewModel.newsPagingData.collectAsLazyPagingItems()
+
             ReachMobiTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        AppSearchBar(textFieldState = searchTextFieldState, onSearch = {
+                        TopAppBar(
+                            title = {
+                                AppSearchBar(textFieldState = searchTextFieldState, onSearch = {
 
-                        })
+                                })
+                            },
+                            actions = {
+                                // Refresh visible only in the all headlines screen
+                                if (selectedItemIndex == 0) {
+                                    IconButton(onClick = {
+//                                        newsViewModel.refreshNews()
+                                        listItems.refresh()
+                                    }) {
+                                        Icon(Icons.Default.Refresh, "")
+                                    }
+                                }
+                            })
+
                     },
                     bottomBar = {
                         NavigationBar {
@@ -103,11 +127,17 @@ class MainActivity : ComponentActivity() {
                         startDestination = AllNewsScreen
                     ) {
                         composable<AllNewsScreen> {
-                            NewsListScreen(onClick = { url ->
-                                openArticle(url)
-                            }, onFavorite = {
+                            NewsListScreen(
+                                onClick = { url ->
+                                    openArticle(url)
+                                },
+                                onFavorite = {
 
-                            }, contentPadding = innerPadding)
+                                },
+                                contentPadding = innerPadding,
+                                viewModel = newsViewModel,
+                                listItems = listItems
+                            )
                         }
                         composable<FavoritesScreen> {
                             FavoritesListScreen(innerPadding, onClick = { url ->

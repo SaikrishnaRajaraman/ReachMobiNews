@@ -30,9 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import com.saikrishna.reachmobi.R
 import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.presentation.news_item_list.components.NewsListItem
@@ -44,14 +43,14 @@ import com.saikrishna.reachmobi.utils.NetworkUtils.isNetworkConnected
 @Composable
 fun NewsListScreen(
     contentPadding: PaddingValues,
-    onClick: (url: String?) -> Unit,
-    onFavorite: (item: NewsItem) -> Unit,
-    viewModel: NewsViewModel = hiltViewModel()
+    onClick: (String?) -> Unit,
+    onFavorite: (NewsItem) -> Unit,
+    listItems: LazyPagingItems<NewsItem>,
+    viewModel: NewsViewModel
 ) {
 
-    val listItems = viewModel.newsPagingData.collectAsLazyPagingItems()
+//    val listItems = viewModel.newsPagingData.collectAsLazyPagingItems()
     val isLoading by viewModel.isLoading.collectAsState()
-    val hasMore by viewModel.hasMore.collectAsState()
 
 
     val isNetworkAvailable by rememberUpdatedState(newValue = isNetworkConnected(LocalContext.current))
@@ -88,32 +87,31 @@ fun NewsListScreen(
                         }
                     }
 
-                    isLoading -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    }
+//                    isLoading -> {
+//                        Box(modifier = Modifier.fillMaxSize()) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.align(Alignment.Center)
+//                            )
+//                        }
+//                    }
 
                     else -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        ) {
-                            LazyColumn {
+                        if (listItems.loadState.refresh == LoadState.Loading) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        } else {
+                            LazyColumn(modifier = Modifier.fillMaxSize()) {
 //
-                                if (listItems.loadState.refresh == LoadState.Loading
-                                    || listItems.loadState.append == LoadState.Loading
-                                ) {
+                                if (listItems.loadState.append == LoadState.Loading) {
                                     item {
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             CircularProgressIndicator(
                                                 modifier = Modifier.align(Alignment.Center)
                                             )
                                         }
-
                                     }
                                 }
 
@@ -123,13 +121,14 @@ fun NewsListScreen(
                                         NewsListItem(item, onClick = {
                                             onClick(item.url)
                                         }, onFavorite = {
-                                            // Change isFavorite to true and return the item
                                             viewModel.addToFavorites(item)
                                         })
                                     }
                                 }
                             }
                         }
+
+
                     }
                 }
             }
