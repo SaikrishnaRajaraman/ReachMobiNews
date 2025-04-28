@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import com.saikrishna.reachmobi.data.model.NewsSource
 import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.data.model.toNewsItem
 import com.saikrishna.reachmobi.ui.theme.ReachMobiTheme
+import com.saikrishna.reachmobi.R
 
 @Composable
 fun NewsListItem(
@@ -100,7 +102,7 @@ fun CoilImage(
         contentDescription = contentDescription,
         modifier = modifier
             .size(64.dp),
-//        placeholder = painterResource(R.drawable.placeholder), // optional
+        placeholder = painterResource(R.drawable.image_placeholder), // optional
 //        error = painterResource(R.drawable.image_error),       // optional
         contentScale = ContentScale.Crop
     )

@@ -1,9 +1,9 @@
 package com.saikrishna.reachmobi.presentation.news_item_list
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -19,12 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,29 +39,20 @@ import com.saikrishna.reachmobi.utils.NetworkUtils.isNetworkConnected
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsListScreen(
-    contentPadding: PaddingValues,
     onClick: (String?) -> Unit,
-    onFavorite: (NewsItem) -> Unit,
     listItems: LazyPagingItems<NewsItem>,
+    onError : () -> Unit,
     viewModel: NewsViewModel
 ) {
 
-//    val listItems = viewModel.newsPagingData.collectAsLazyPagingItems()
-    val isLoading by viewModel.isLoading.collectAsState()
-
 
     val isNetworkAvailable by rememberUpdatedState(newValue = isNetworkConnected(LocalContext.current))
-
-    var searchText by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
 
     ReachMobiTheme {
         Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
             )
             {
 
@@ -87,13 +75,6 @@ fun NewsListScreen(
                         }
                     }
 
-//                    isLoading -> {
-//                        Box(modifier = Modifier.fillMaxSize()) {
-//                            CircularProgressIndicator(
-//                                modifier = Modifier.align(Alignment.Center)
-//                            )
-//                        }
-//                    }
 
                     else -> {
                         if (listItems.loadState.refresh == LoadState.Loading) {
@@ -102,27 +83,48 @@ fun NewsListScreen(
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }
-                        } else {
-                            LazyColumn(modifier = Modifier.fillMaxSize()) {
-//
-                                if (listItems.loadState.append == LoadState.Loading) {
-                                    item {
-                                        Box(modifier = Modifier.fillMaxSize()) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.align(Alignment.Center)
-                                            )
+                        } else if(listItems.loadState.refresh is LoadState.Error)  {
+                            onError()
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = stringResource(R.string.no_articles_found),
+                                    modifier = Modifier.align(
+                                        Alignment.Center
+                                    )
+                                )
+                            }
+                        }
+                        else {
+                            if(listItems.itemCount == 0) {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    Text(
+                                        text = stringResource(R.string.no_articles_found),
+                                        modifier = Modifier.align(
+                                            Alignment.Center
+                                        )
+                                    )
+                                }
+                            } else {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    if (listItems.loadState.append == LoadState.Loading) {
+                                        item {
+                                            Box(modifier = Modifier.fillMaxSize()) {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier.align(Alignment.Center)
+                                                )
+                                            }
                                         }
                                     }
-                                }
 
-                                items(count = listItems.itemCount) { index ->
-                                    val item = listItems[index]
-                                    if (item != null) {
-                                        NewsListItem(item, onClick = {
-                                            onClick(item.url)
-                                        }, onFavorite = {
-                                            viewModel.addToFavorites(item)
-                                        })
+                                    items(count = listItems.itemCount) { index ->
+                                        val item = listItems[index]
+                                        if (item != null) {
+                                            NewsListItem(item, onClick = {
+                                                onClick(item.url)
+                                            }, onFavorite = {
+                                                viewModel.addToFavorites(item)
+                                            })
+                                        }
                                     }
                                 }
                             }

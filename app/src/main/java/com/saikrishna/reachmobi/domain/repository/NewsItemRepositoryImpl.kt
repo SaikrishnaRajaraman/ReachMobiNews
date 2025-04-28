@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import androidx.room.Query
 import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.data.repository.NewsItemLocalDataSource
 import com.saikrishna.reachmobi.data.repository.NewsItemRemoteDataSource
@@ -17,10 +18,10 @@ class NewsItemRepositoryImpl @Inject constructor(
     private val local: NewsItemLocalDataSource
 ) : NewsItemRepository {
 
-    override fun getNewsItems(page: Int): Flow<PagingData<NewsItem>> {
+    override fun getNewsItems(page: Int,query: String): Flow<PagingData<NewsItem>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-            pagingSourceFactory = { remote.getNewsItemsPagingSource(page) }
+            pagingSourceFactory = { remote.getNewsItemsPagingSource(page,query) }
         ).flow
     }
 

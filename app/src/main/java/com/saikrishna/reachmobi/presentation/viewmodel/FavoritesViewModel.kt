@@ -2,14 +2,12 @@ package com.saikrishna.reachmobi.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.domain.usecase.GetFavoritesUseCase
-import com.saikrishna.reachmobi.domain.usecase.GetNewsItemsUseCase
 import com.saikrishna.reachmobi.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

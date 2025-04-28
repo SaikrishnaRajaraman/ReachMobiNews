@@ -10,6 +10,7 @@ interface ApiService {
     @GET(APIConstants.ENDPOINTS.TOP_HEADLINES)
     suspend fun getNewsItems(
         @Query(APIConstants.PARAMS.PAGE) page: Int,
-        @Query(APIConstants.PARAMS.COUNTRY) country: String
+        @Query(APIConstants.PARAMS.COUNTRY) country: String,
+        @Query(APIConstants.PARAMS.QUERY) query: String
     ): NewsResponse
 }

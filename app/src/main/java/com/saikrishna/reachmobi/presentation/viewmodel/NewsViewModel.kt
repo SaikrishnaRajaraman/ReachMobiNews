@@ -14,9 +14,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,25 +29,28 @@ class NewsViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val isLoadingFlow = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = isLoadingFlow
-
-
     private val favorites = getFavoritesUseCase.invoke()
+
+    private val searchQuery = MutableStateFlow("")
+
+
+    fun setSearchQuery(query: String) {
+        searchQuery.value = query
+    }
 
     val favoriteUrls: Flow<Set<String>> =
         favorites.map { item -> item.map { it.url }.toSet() }
 
 
-    val newsPagingData: Flow<PagingData<NewsItem>> =
-        getNewsItemsUseCase()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val newsPagingData: Flow<PagingData<NewsItem>> = searchQuery.flatMapLatest{ query ->
+        getNewsItemsUseCase(query = query)
             .cachedIn(viewModelScope)
-            .combine(favoriteUrls) { pagingData , favSet ->
-                pagingData.map { item ->
-                    item.copy(isFavorite = item.url in favSet)
-                }
+    }.combine(favoriteUrls) { pagingData, favSet ->
+            pagingData.map { item ->
+                item.copy(isFavorite = item.url in favSet)
             }
-
+        }
 
 
     fun addToFavorites(item: NewsItem) {

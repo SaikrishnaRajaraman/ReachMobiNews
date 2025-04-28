@@ -10,7 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Newspaper
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,19 +28,25 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.saikrishna.reachmobi.data.SearchHistoryManager
 import com.saikrishna.reachmobi.presentation.favorites_list.FavoritesListScreen
 import com.saikrishna.reachmobi.presentation.home.components.AppSearchBar
 import com.saikrishna.reachmobi.presentation.models.BottomNavigationItem
@@ -49,10 +58,21 @@ import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private lateinit var historyManager: SearchHistoryManager
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        historyManager = SearchHistoryManager(this)
         enableEdgeToEdge()
         setContent {
+
+            val suggestions = remember { mutableStateListOf<String>() }
+            LaunchedEffect(Unit) {
+                suggestions.clear()
+                suggestions += historyManager.getHistory()
+            }
 
             val navController = rememberNavController()
 
@@ -75,22 +95,21 @@ class MainActivity : ComponentActivity() {
 
             val newsViewModel: NewsViewModel = hiltViewModel()
             val listItems = newsViewModel.newsPagingData.collectAsLazyPagingItems()
+            var searchExpanded by rememberSaveable { mutableStateOf(false) }
 
             ReachMobiTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        TopAppBar(
+                        CenterAlignedTopAppBar(
                             title = {
-                                AppSearchBar(textFieldState = searchTextFieldState, onSearch = {
-
-                                })
+                                Text(stringResource(R.string.app_name))
                             },
                             actions = {
                                 // Refresh visible only in the all headlines screen
                                 if (selectedItemIndex == 0) {
                                     IconButton(onClick = {
-//                                        newsViewModel.refreshNews()
+                                        newsViewModel.setSearchQuery("")
                                         listItems.refresh()
                                     }) {
                                         Icon(Icons.Default.Refresh, "")
@@ -122,29 +141,50 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = AllNewsScreen
-                    ) {
-                        composable<AllNewsScreen> {
-                            NewsListScreen(
-                                onClick = { url ->
-                                    openArticle(url)
-                                },
-                                onFavorite = {
+                    Column(modifier = Modifier.padding(innerPadding)) {
+
+                        if(selectedItemIndex == 0 && !searchExpanded) {
+                            AppSearchBar(
+                                textFieldState = searchTextFieldState,
+                                onSearch = { query ->
+                                    newsViewModel.setSearchQuery(query)
+                                    listItems.refresh()
+                                    historyManager.addQuery(query)
+                                    suggestions.clear()
+                                    suggestions += historyManager.getHistory()
+                                    searchExpanded = false
 
                                 },
-                                contentPadding = innerPadding,
-                                viewModel = newsViewModel,
-                                listItems = listItems
+                                previousSearches = suggestions
                             )
                         }
-                        composable<FavoritesScreen> {
-                            FavoritesListScreen(innerPadding, onClick = { url ->
-                                openArticle(url)
-                            })
+
+
+                        NavHost(
+                            navController = navController,
+                            startDestination = AllNewsScreen
+                        ) {
+                            composable<AllNewsScreen> {
+                                NewsListScreen(
+                                    onClick = { url ->
+                                        openArticle(url)
+                                    },
+                                    onError = {
+                                        showErrorToast()
+
+                                    },
+                                    viewModel = newsViewModel,
+                                    listItems = listItems
+                                )
+                            }
+                            composable<FavoritesScreen> {
+                                FavoritesListScreen(onClick = { url ->
+                                    openArticle(url)
+                                })
+                            }
                         }
                     }
+
 
                 }
             }
@@ -173,6 +213,16 @@ fun Context.openArticle(url: String?) {
 fun Context.openBrowserActivity(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, url.toUri());
     this.startActivity(intent)
+}
+
+fun Context.showErrorToast() {
+    Toast
+        .makeText(
+            this,
+            R.string.error_toast,
+            Toast.LENGTH_SHORT
+        )
+        .show()
 }
 
 @Serializable

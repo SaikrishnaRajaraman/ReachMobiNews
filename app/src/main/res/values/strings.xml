@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ReachMobi</string>
+    <string name="app_name">NewsMobi</string>
     <string name="all_news">All Headlines</string>
     <string name="favorites">Favorites</string>
     <string name="url_invalid">Invalid URL!!</string>
@@ -11,4 +11,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="network_not_available">No Network Found</string>
+    <string name="no_articles_found">No Articles Found</string>
+    <string name="error_toast">Something went wrong!</string>
 </resources>

@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class GetNewsItemsUseCase @Inject constructor(private val repository : NewsItemRepository) {
 
-    operator fun invoke(page : Int = 1) : Flow<PagingData<NewsItem>> {
-        return repository.getNewsItems(page)
+    operator fun invoke(page : Int = 1,query : String = "") : Flow<PagingData<NewsItem>> {
+        return repository.getNewsItems(page,query)
     }
 
 }

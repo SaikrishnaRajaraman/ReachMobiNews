@@ -28,7 +28,6 @@ import com.saikrishna.reachmobi.data.model.NewsItem
 
 @Composable
 fun FavoritesListScreen(
-    contentPadding: PaddingValues,
     onClick: (url: String?) -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
@@ -42,7 +41,6 @@ fun FavoritesListScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
         ) {
 
             if (favoritesList.value.isEmpty()) {

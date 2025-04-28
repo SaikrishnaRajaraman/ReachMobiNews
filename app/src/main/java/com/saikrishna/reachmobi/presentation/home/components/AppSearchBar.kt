@@ -9,9 +9,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -28,6 +30,7 @@ import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import com.saikrishna.reachmobi.R
+import kotlin.math.exp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +42,6 @@ fun AppSearchBar(
 ) {
     // Controls expansion state of the search bar
     var expanded by rememberSaveable { mutableStateOf(false) }
-
     Box(
         modifier
             .fillMaxWidth()
@@ -61,7 +63,23 @@ fun AppSearchBar(
                     onExpandedChange = { expanded = it },
                     placeholder = { Text("Search") },
                     trailingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = null)
+                        if (textFieldState.text.isNotBlank()) {
+                            IconButton(onClick = {
+                                textFieldState.edit { replace(0, length, "") }
+                                expanded = false
+                                onSearch("")
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Clear text"
+                                )
+                            }
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        }
                     }
                 )
             },
@@ -90,6 +108,7 @@ fun AppSearchBar(
                             modifier = Modifier
                                 .clickable {
                                     textFieldState.edit { replace(0, length, result) }
+                                    onSearch(textFieldState.text.toString())
                                     expanded = false
                                 }
                                 .fillMaxWidth()

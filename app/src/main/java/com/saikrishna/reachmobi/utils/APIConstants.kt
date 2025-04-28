@@ -12,6 +12,7 @@ object APIConstants {
     object  PARAMS {
         const val COUNTRY = "country"
         const val PAGE = "page"
+        const val QUERY = "q"
     }
 
 }
