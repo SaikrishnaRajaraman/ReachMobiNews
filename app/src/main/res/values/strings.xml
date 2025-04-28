@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ReachMobi</string>
+    <string name="all_news">All Headlines</string>
+    <string name="favorites">Favorites</string>
+    <string name="url_invalid">Invalid URL!!</string>
+    <string name="search">Search</string>
+    <string name="no_recent_searches">No Recent Searches</string>
+    <string name="no_favorites_found">No Favorites</string>
+    <string name="remove_favorite">Remove Favorite</string>
+    <string name="confirm_remove_favorite">Are you sure you want to remove this item from your favorites?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="network_not_available">No Network Found</string>
+</resources>
