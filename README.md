@@ -53,18 +53,11 @@ const val EVENT_SEARCH_FEED = "SEARCH_FEED"
 
 ## Screenshots
 
-![image](https://github.com/user-attachments/assets/cb3a7363-e7f8-41bb-98fd-ee640fb85baa)
-
-![image](https://github.com/user-attachments/assets/4eb47c1d-4ab3-48d1-a0bb-e5bb6a0f4e22)
-
-![image](https://github.com/user-attachments/assets/622cf6c3-0b02-4047-b051-fd5367ded04f)
-
 
 ### Dark Mode 
 
-![image](https://github.com/user-attachments/assets/c79ce2fb-742c-4af6-9b00-7c041981b8a5)
-![image](https://github.com/user-attachments/assets/c46f0193-daaa-433f-9bb3-96e2d9008a65)
-![image](https://github.com/user-attachments/assets/fbbff93a-0696-43d7-a66a-684cfeab7f88)
+
+![image](https://github.com/user-attachments/assets/cb282356-169c-4e08-aa7c-8c19bd274641)
 
 
 
