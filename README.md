@@ -52,17 +52,17 @@ const val EVENT_SEARCH_FEED = "SEARCH_FEED"
 - **Authentication**: Generate an API key at [https://newsapi.org/register](https://newsapi.org/register)
 
 ## Screenshots
-<img src="https://github.com/user-attachments/assets/b5917727-c05e-4f91-b11f-e3adec974bb5" alt="Light mode screenshot 3" width="250" />
-<img src="https://github.com/user-attachments/assets/64e5e267-9c01-4cd8-b2f3-8b6bd81ea4a0" alt="Light mode screenshot 2" width="250"/>
 <img src="https://github.com/user-attachments/assets/82c86c53-86d8-4667-bc40-51b334b85697" alt="Light mode screenshot 1" width="250"/>
+<img src="https://github.com/user-attachments/assets/64e5e267-9c01-4cd8-b2f3-8b6bd81ea4a0" alt="Light mode screenshot 2" width="250"/>
+<img src="https://github.com/user-attachments/assets/b5917727-c05e-4f91-b11f-e3adec974bb5" alt="Light mode screenshot 3" width="250" />
+
 
 
 ### Dark Mode 
 
-
-<img src="https://github.com/user-attachments/assets/b81eab09-133d-413e-bf62-6474dc644496" alt="Dark mode screenshot 3" width="250"/>
-<img src="https://github.com/user-attachments/assets/a145d284-91ee-4425-9246-6b9ccd788a55" alt="Dark mode screenshot 2" width="250"/>
 <img src="https://github.com/user-attachments/assets/ca461345-85b6-4509-9a66-34a27601efe0" alt="Dark mode screenshot 1" width="250"/>
+<img src="https://github.com/user-attachments/assets/a145d284-91ee-4425-9246-6b9ccd788a55" alt="Dark mode screenshot 2" width="250"/>
+<img src="https://github.com/user-attachments/assets/b81eab09-133d-413e-bf62-6474dc644496" alt="Dark mode screenshot 3" width="250"/>
 
 
 
