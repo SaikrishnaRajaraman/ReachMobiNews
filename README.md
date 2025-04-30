@@ -52,7 +52,7 @@ const val EVENT_SEARCH_FEED = "SEARCH_FEED"
 - **Authentication**: Generate an API key at [https://newsapi.org/register](https://newsapi.org/register)
 
 ## Screenshots
-![Light_3](https://github.com/user-attachments/assets/b5917727-c05e-4f91-b11f-e3adec974bb5)
+![Light_3](https://github.com/user-attachments/assets/b5917727-c05e-4f91-b11f-e3adec974bb5){width=300px height=200px}
 ![Light_2](https://github.com/user-attachments/assets/64e5e267-9c01-4cd8-b2f3-8b6bd81ea4a0)
 ![Light_1](https://github.com/user-attachments/assets/82c86c53-86d8-4667-bc40-51b334b85697)
 
