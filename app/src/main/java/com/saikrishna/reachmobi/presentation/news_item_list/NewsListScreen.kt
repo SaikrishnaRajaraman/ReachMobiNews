@@ -1,6 +1,5 @@
 package com.saikrishna.reachmobi.presentation.news_item_list
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -44,7 +42,6 @@ fun NewsListScreen(
     onError : () -> Unit,
     viewModel: NewsViewModel
 ) {
-
 
     val isNetworkAvailable by rememberUpdatedState(newValue = isNetworkConnected(LocalContext.current))
 
@@ -122,7 +119,7 @@ fun NewsListScreen(
                                             NewsListItem(item, onClick = {
                                                 onClick(item.url)
                                             }, onFavorite = {
-                                                viewModel.addToFavorites(item)
+                                                viewModel.toggleFavorites(item)
                                             })
                                         }
                                     }

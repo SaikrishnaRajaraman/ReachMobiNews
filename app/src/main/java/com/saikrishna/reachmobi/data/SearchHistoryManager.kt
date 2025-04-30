@@ -16,10 +16,10 @@ class SearchHistoryManager(context: Context) {
 
 
     fun addQuery(query: String) {
-        if (query.isNotEmpty()) {
+        if (query.trim().isNotEmpty()) {
             val history = getHistory().toMutableList()
-            history.remove(query)
-            history.add(0, query)
+            history.remove(query.trim())
+            history.add(0, query.trim())
             if (history.size > 10) history.dropLast(history.size - 10)
             prefs.edit() {
                 putString(KEY, history.joinToString("|"))

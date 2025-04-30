@@ -9,13 +9,12 @@ import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.domain.usecase.GetFavoritesUseCase
 import com.saikrishna.reachmobi.domain.usecase.GetNewsItemsUseCase
 import com.saikrishna.reachmobi.domain.usecase.ToggleFavoriteUseCase
+import com.saikrishna.reachmobi.utils.AnalyticsConstants
+import com.saikrishna.reachmobi.utils.AnalyticsUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMap
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -25,7 +24,8 @@ import javax.inject.Inject
 class NewsViewModel @Inject constructor(
     private val getNewsItemsUseCase: GetNewsItemsUseCase,
     private val getFavoritesUseCase: GetFavoritesUseCase,
-    private val toggleFavoritesUseCase: ToggleFavoriteUseCase
+    private val toggleFavoritesUseCase: ToggleFavoriteUseCase,
+    private val analyticsUtils: AnalyticsUtils
 ) :
     ViewModel() {
 
@@ -35,6 +35,7 @@ class NewsViewModel @Inject constructor(
 
 
     fun setSearchQuery(query: String) {
+        analyticsUtils.logEvent(AnalyticsConstants.EVENT_SEARCH_FEED)
         searchQuery.value = query
     }
 
@@ -43,17 +44,22 @@ class NewsViewModel @Inject constructor(
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val newsPagingData: Flow<PagingData<NewsItem>> = searchQuery.flatMapLatest{ query ->
+    val newsPagingData: Flow<PagingData<NewsItem>> = searchQuery.flatMapLatest { query ->
         getNewsItemsUseCase(query = query)
             .cachedIn(viewModelScope)
     }.combine(favoriteUrls) { pagingData, favSet ->
-            pagingData.map { item ->
-                item.copy(isFavorite = item.url in favSet)
-            }
+        pagingData.map { item ->
+            item.copy(isFavorite = item.url in favSet)
         }
+    }
 
 
-    fun addToFavorites(item: NewsItem) {
+    fun toggleFavorites(item: NewsItem) {
+        if (item.isFavorite) {
+            analyticsUtils.logEvent(AnalyticsConstants.EVENT_REMOVE_FAVORITE)
+        } else {
+            analyticsUtils.logEvent(AnalyticsConstants.EVENT_ADD_TO_FAVORITE)
+        }
         viewModelScope.launch {
             toggleFavoritesUseCase(item)
         }

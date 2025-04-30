@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.saikrishna.reachmobi.data.model.NewsItem
 import com.saikrishna.reachmobi.domain.usecase.GetFavoritesUseCase
 import com.saikrishna.reachmobi.domain.usecase.ToggleFavoriteUseCase
+import com.saikrishna.reachmobi.utils.AnalyticsConstants
+import com.saikrishna.reachmobi.utils.AnalyticsUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @dagger.hilt.android.lifecycle.HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val getFavoritesUseCase: GetFavoritesUseCase,
-    private val toggleFavoritesUseCase: ToggleFavoriteUseCase
+    private val toggleFavoritesUseCase: ToggleFavoriteUseCase,
+    private val analyticsUtil : AnalyticsUtils
 ) :
     ViewModel() {
 
@@ -32,6 +35,7 @@ class FavoritesViewModel @Inject constructor(
 
 
     fun deleteFavorite(item: NewsItem) {
+        analyticsUtil.logEvent(AnalyticsConstants.EVENT_REMOVE_FAVORITE)
         viewModelScope.launch {
             toggleFavoritesUseCase(item)
         }
